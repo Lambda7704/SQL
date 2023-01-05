@@ -1,0 +1,29 @@
+--Created the database and entered items
+CREATE TABLE bikes (id INTEGER PRIMARY KEY, brand TEXT, model TEXT, suspension_type TEXT, frame_material TEXT, price REAL);
+
+INSERT INTO bikes VALUES (1, "Specialized", "Stumpjumper", "full suspension", "alloy", "2199.00");
+INSERT INTO bikes VALUES (2, "Specialized", "Rockhopper", "hardtail", "alloy", "599.00");
+INSERT INTO bikes VALUES (3, "Specialized", "Stumpjumper", "full suspension", "carbon", "5099.00");
+INSERT INTO bikes VALUES (4, "TREK", "Evolve", "full suspension", "carbon", "12990.00");
+INSERT INTO bikes VALUES (5, "TREK", "Rocket", "hardtail", "alloy", "399.00");
+INSERT INTO bikes VALUES (6, "TREK", "FUEL Ex 9.7", "full suspension", "carbon", "5199.00");
+INSERT INTO bikes VALUES (7, "Specialized", "Stumpjumper", "full suspension", "alloy", "2299.00");
+INSERT INTO bikes VALUES (8, "Specialized", "Stumpjumper", "full suspension", "alloy", "1999.00");
+INSERT INTO bikes VALUES (9, "PIVOT", "Hammer", "full suspension", "carbon", "8499.00");
+INSERT INTO bikes VALUES (10, "Giant", "Destroyer", "hardtail", "alloy", "399.00");
+INSERT INTO bikes VALUES (11, "Fezzari", "Evo", "full suspension", "alloy", "3199.00");
+INSERT INTO bikes VALUES (12, "Fezzari", "Kool", "hardtail", "alloy", "679.00");
+INSERT INTO bikes VALUES (13, "PIVOT", "Hammer", "full suspension", "alloy", "2299.00");
+INSERT INTO bikes VALUES (14, "Fezzari", "Evo", "full suspension", "alloy", "3059.00");
+INSERT INTO bikes VALUES (15, "Fezzari", "Evo", "full suspension", "carbon", "13049.00");
+
+--Order the bikes from cheapest to most expensive
+SELECT *
+FROM bikes
+ORDER BY price;
+
+--What is the average price for each model and how many are available?
+SELECT brand, model, AVG(price), COUNT(model)
+FROM bikes
+GROUP BY model;
+
