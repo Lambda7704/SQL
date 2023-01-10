@@ -414,4 +414,10 @@ GROUP BY gender;
 SELECT COUNT(name) AS number_of_astronauts, COUNT(death_date) AS number_of_astronaut_deaths 
 FROM astronauts;
 
+--amount of astronauts in each rank in each military branch
+SELECT military_branch, military_rank, COUNT(military_rank) AS number_of_astronauts
+FROM astronauts
+WHERE military_branch IS NOT NULL AND military_rank IS NOT NULL
+GROUP BY military_branch, military_rank;
+
 
