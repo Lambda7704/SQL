@@ -1,4 +1,4 @@
-/* Data entered */
+/* Data entered -- Analysis queries at bottom*/
 CREATE TABLE astronauts(
    Name                TEXT PRIMARY KEY,
    Year                INTEGER,
