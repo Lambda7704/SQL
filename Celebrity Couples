@@ -1,0 +1,80 @@
+/* Creating tables - ANALYSIS at bottom */
+CREATE table famous_people (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);
+
+INSERT INTO famous_people VALUES (1, "Taylor Swift", 33);
+INSERT INTO famous_people VALUES (2, "Joe Alwyn", 31);
+INSERT INTO famous_people VALUES (3, "Blake Lively", 35);
+INSERT INTO famous_people VALUES (4, "Ryan Reynolds", 46);
+INSERT INTO famous_people VALUES (5, "Sandra Bullock", 58);
+INSERT INTO famous_people VALUES (6, "Brene Brown", 57);
+INSERT INTO famous_people VALUES (7, "Nicole Kidman", 55);
+INSERT INTO famous_people VALUES (8, "Keith Urban", 55);
+
+CREATE TABLE partners (name_id INTEGER PRIMARY KEY, partners_name_id INTEGER);
+
+INSERT INTO partners VALUES (1, 2);
+INSERT INTO partners VALUES (3, 4);
+INSERT INTO partners VALUES (7, 8);
+
+CREATE TABLE actors (id INTEGER PRIMARY KEY, movies TEXT, hometown TEXT);
+
+INSERT INTO actors VALUES (2, "The Favorite, Catherine Called Birdy, Harriet", "Kent");
+INSERT INTO actors VALUES (3, "A Simple Favor, The Sisterhood of the Traveling Pants", "Los Angeles");
+INSERT INTO actors VALUES (4, "Adventureland, Deadpool, The Proposal", "Vancouver");
+INSERT INTO actors VALUES (5, "Miss Congeniality, The Proposal, While You Were Sleeping, The Blind Side, The Lost City", "Arlington");
+INSERT INTO actors VALUES (7, "The Northman, Bombshell", "Sydney");
+
+CREATE TABLE singers (id INTEGER PRIMARY KEY, songs TEXT, hometown TEXT);
+
+INSERT INTO singers VALUES (1, "Anti-Hero, You Are in Love, Cruel Summer, Delicate, Don't You (From the Vault)", "West Reading");
+INSERT INTO singers VALUES (8, "Kiss a Girl, Somewhere In My Car", "Whangarei");
+
+CREATE TABLE authors (id INTEGER PRIMARY KEY, books TEXT, hometown TEXT);
+
+INSERT INTO authors VALUES (6, "Daring Greatly, The Gifts of Imperfection, Rising Strong, Braving the Wilderness, Atlas of the Heart", "San Antonio");
+
+--shows famous people with famous partners and ages of both
+SELECT a.name, a.age, b.name, b.age
+FROM partners 
+JOIN famous_people a
+ON  partners.name_id = a.id
+JOIN famous_people b
+ON partners.partners_name_id = b.id;
+
+--shows movies actors have been in
+SELECT name, movies
+FROM famous_people
+JOIN actors
+ON actors.id = famous_people.id
+ORDER BY name;
+
+--shows songs singers have written
+SELECT name, songs
+FROM famous_people
+JOIN singers
+ON singers.id = famous_people.id
+ORDER BY name;
+
+--shows books authors have written
+SELECT name, books
+FROM famous_people
+JOIN authors
+ON authors.id = famous_people.id
+ORDER BY name;
+
+--shows hometown of all famous people in famous_people table
+SELECT famous_people.name AS Name, actors.hometown AS Hometown
+FROM actors
+JOIN famous_people
+ON actors.id = famous_people.id
+UNION
+SELECT famous_people.name, singers.hometown
+FROM singers
+JOIN famous_people
+ON singers.id = famous_people.id
+UNION
+SELECT famous_people.name, authors.hometown
+FROM authors
+JOIN famous_people
+ON authors.id = famous_people.id
+GROUP BY famous_people.id;
