@@ -1,4 +1,4 @@
-/* Creating tables - ANALYSIS at bottom */
+/* Creating tables - Analysis at bottom */
 CREATE table famous_people (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);
 
 INSERT INTO famous_people VALUES (1, "Taylor Swift", 33);
