@@ -1,0 +1,43 @@
+--This is answering some questions about Netflix movies/tv shows from a given dataset.
+
+--joins movie title, rating, and type with the cast, grouped by type and rating
+SELECT titles.title AS title, titles.rating AS Rating, titles.type AS type, people."cast" AS "Cast"
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" titles
+LEFT JOIN "CharlotteChaze/BreakIntoTech"."netflix_people" people
+ON titles.show_id = people.show_id
+ORDER BY type, rating;
+
+--counts the number of movies and tv shows
+SELECT type, COUNT(type)
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info"
+GROUP BY type;
+
+--the most recent movies/tv shows added
+SELECT date_added, title, type
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" 
+WHERE date_added IS NOT NULL
+ORDER BY date_added DESC;
+
+--titles alphabetized
+SELECT title
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" 
+ORDER BY title;
+
+--director for the movie Bright Star
+SELECT titles.title AS Title, people.director AS Director
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" titles
+LEFT JOIN "CharlotteChaze/BreakIntoTech"."netflix_people" people
+ON titles.show_id = people.show_id
+WHERE titles.title = 'Bright Star';
+--OR . . .
+SELECT director
+FROM "CharlotteChaze/BreakIntoTech"."netflix_people"
+WHERE show_id = (
+    SELECT show_id FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info" WHERE title = 'Bright Star');
+
+
+--oldest movie in the database
+SELECT title, release_year
+FROM "CharlotteChaze/BreakIntoTech"."netflix_titles_info"
+ORDER BY release_year ASC
+LIMIT 1;
