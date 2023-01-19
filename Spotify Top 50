@@ -1,0 +1,73 @@
+--Analysis on Spotify Top 50 Songs of 2021 data (https://www.kaggle.com/datasets/equinxx/spotify-top-50-songs-in-2021?select=spotify_top50_2021.csv)
+
+--1. Which artist released the most amount of songs in the top 50?
+SELECT artist_name, COUNT(artist_name) AS number_of_songs
+FROM Spotifydata
+GROUP BY artist_name
+ORDER BY number_of_songs DESC;
+
+--2. Who are the top 10 artists based on popularity?
+SELECT artist_name, popularity
+FROM Spotifydata
+ORDER BY popularity DESC
+LIMIT 10;
+
+--3. What artist released the longest song? How long was the song?
+SELECT artist_name, round(duration_ms/60000.00, 2) AS song_length_in_min
+FROM Spotifydata
+WHERE duration_ms = (SELECT max(duration_ms) FROM Spotifydata); 
+
+--4. What's the average danceability for the 10 most popular songs?
+SELECT AVG(danceability)
+FROM Spotifydata
+WHERE popularity IN (SELECT popularity FROM Spotifydata ORDER BY popularity DESC LIMIT 10);
+
+--5. What's the most common key for popular songs to be in?
+SELECT 
+    CASE
+        WHEN song_key = 0 THEN 'C'
+        WHEN song_key = 1 THEN 'C#/Db'
+        WHEN song_key = 2 THEN 'D'
+        WHEN song_key = 3 THEN 'D#/Eb'
+        WHEN song_key = 4 THEN 'E'
+        WHEN song_key = 5 THEN 'F'
+        WHEN song_key = 6 THEN 'F#/Gb'
+        WHEN song_key = 7 THEN 'G'
+        WHEN song_key = 8 THEN 'G#/Ab'
+        WHEN song_key = 9 THEN 'A'
+        WHEN song_key = 10 THEN 'A#/Bb'
+        WHEN song_key = 11 THEN 'B'
+        ELSE 'No key detected'
+END AS key_of_song, COUNT(*) AS num_of_top_50_in_key
+FROM Spotifydata
+GROUP BY key_of_song
+ORDER BY song_key;
+
+--5.5. What's the most popular time signature?
+SELECT 
+    CASE
+        WHEN time_signature = 3 THEN '3/4'
+        WHEN time_signature = 4 THEN '4/4'
+        WHEN time_signature = 5 THEN '5/4'
+        WHEN time_signature = 6 THEN '6/4'
+        WHEN time_signature = 7 THEN '7/4'
+        END AS Time_Signature, COUNT(time_signature) AS num_of_songs
+FROM Spotifydata
+GROUP BY time_signature;
+
+--6. Are popular songs more often major or minor? 
+SELECT
+    CASE
+        WHEN song_mode = 1 THEN 'Major'
+        WHEN song_mode = 0 THEN 'minor'
+    END AS modality, COUNT(song_mode) AS num_of_songs
+FROM Spotifydata
+GROUP BY song_mode;
+
+--7. What's the average tempo?
+SELECT AVG(tempo)
+FROM Spotifydata;
+
+--8. What's the average length of the top 50 songs?
+SELECT round(AVG(duration_ms)/60000.00,2) AS avg_length_in_min
+FROM Spotifydata;
