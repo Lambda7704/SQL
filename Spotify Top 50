@@ -71,3 +71,17 @@ FROM Spotifydata;
 --8. What's the average length of the top 50 songs?
 SELECT round(AVG(duration_ms)/60000.00,2) AS avg_length_in_min
 FROM Spotifydata;
+
+--9. What is the name and average popularity for every artist with an average popularity of 90 or above?
+WITH artist_popularity AS (
+    SELECT artist_name, AVG(popularity) AS avg_popularity,
+    CASE
+        WHEN AVG(popularity) >= 90 THEN "Top Star"
+    END AS label
+    FROM Spotifydata
+    GROUP BY artist_name
+)
+SELECT artist_name, avg_popularity, label
+FROM artist_popularity
+WHERE avg_popularity >= 90
+ORDER BY avg_popularity DESC;
