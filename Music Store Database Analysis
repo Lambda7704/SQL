@@ -1,0 +1,186 @@
+--Analysis of Music Store database
+
+--1. Show customers (their full names, customer ID, and country) who are not in the US.
+SELECT CustomerId, FirstName, LastName, Country
+FROM customers
+WHERE Country != "USA"
+ORDER BY Country;
+
+--2. Show only the customers from Brazil.
+SELECT CustomerId, FirstName, LastName, Country
+FROM customers
+WHERE Country = "Brazil";
+
+--3. Find the invoices (customer's full name, invoice ID, date, billing country) of customers who are from Brazil.
+SELECT i.InvoiceId, c.FirstName, c.LastName, i.InvoiceDate, i.BillingCountry
+FROM invoices i
+JOIN customers c
+ON i.CustomerId = c.CustomerId
+WHERE c.Country = "Brazil";
+
+--4. Show the employees who are Sales Agents.
+SELECT FirstName, LastName, Title
+FROM employees
+WHERE Title = "Sales Support Agent";
+
+--5. Find a unique/distinct list of billing countries from the invoice table.
+SELECT distinct BillingCountry
+FROM invoices
+ORDER BY BillingCountry;
+
+--6. Provide a query that shows the invoices associated with each sales agent, along with the sales agent's full name.
+SELECT e.FirstName, e.LastName, i.InvoiceId
+FROM employees e
+JOIN customers c
+ON e.EmployeeId = c.SupportRepId
+JOIN invoices i
+ON c.CustomerId = i.CustomerId
+WHERE e.Title = "Sales Support Agent";
+
+--7. Show the invoice total, customer name, country, and sales agent name for all invoices.
+SELECT i.InvoiceId, SUM(items.UnitPrice * items.Quantity) AS total_price, c.FirstName, c.LastName, c.Country, e.FirstName AS sales_rep_first_name, e.LastName AS sales_rep_last_name
+FROM invoice_items items
+LEFT JOIN invoices i
+ON items.InvoiceId = i.InvoiceId
+JOIN customers c
+ON c.CustomerId = i.CustomerId
+JOIN employees e
+ON e.EmployeeId = c.SupportRepId
+GROUP BY i.InvoiceId
+ORDER BY items.InvoiceId;
+
+--8. What invoice had the highest total? What's the average total price? 
+WITH temp_invoice AS (SELECT i.InvoiceId, SUM(items.UnitPrice * items.Quantity) AS total_price, c.FirstName, c.LastName, c.Country, e.FirstName AS sales_rep_first_name, e.LastName AS sales_rep_last_name
+FROM invoice_items items
+LEFT JOIN invoices i
+ON items.InvoiceId = i.InvoiceId
+JOIN customers c
+ON c.CustomerId = i.CustomerId
+JOIN employees e
+ON e.EmployeeId = c.SupportRepId
+GROUP BY i.InvoiceId
+ORDER BY items.InvoiceId)
+
+SELECT round(max(total_price),2) AS max_invoice_spend, round(AVG(total_price),2) AS avg_invoice_spend
+FROM temp_invoice;
+
+--9. Which sales rep brought in the most money in total sales?
+WITH temp_invoice AS (SELECT i.InvoiceId, SUM(items.UnitPrice * items.Quantity) AS total_price, c.FirstName, c.LastName, c.Country, e.FirstName AS sales_rep_first_name, e.LastName AS sales_rep_last_name
+FROM invoice_items items
+LEFT JOIN invoices i
+ON items.InvoiceId = i.InvoiceId
+JOIN customers c
+ON c.CustomerId = i.CustomerId
+JOIN employees e
+ON e.EmployeeId = c.SupportRepId
+GROUP BY i.InvoiceId
+ORDER BY items.InvoiceId)
+
+SELECT sales_rep_first_name, sales_rep_last_name, round(SUM(total_price),2) AS total_sales_money
+FROM temp_invoice
+GROUP BY sales_rep_first_name, sales_rep_last_name
+ORDER BY total_sales_money DESC;
+
+--10. How many invoices were there in 2009?
+SELECT COUNT(InvoiceId) AS number_of_invoices
+FROM invoices
+WHERE InvoiceDate LIKE "2009%";
+
+--10.5. Which sales agent made the most dollars in sales in 2009?
+SELECT e.FirstName, e.LastName, round(SUM(i.Total),2) AS total_sales_2009
+FROM invoices i
+JOIN customers c
+ON c.CustomerId = i.CustomerId
+JOIN employees e
+ON e.EmployeeId = c.SupportRepId
+WHERE InvoiceDate LIKE "2009%"
+GROUP BY e.EmployeeID
+ORDER BY total_sales_2009 DESC;
+
+--11. What are the total sales for 2009?
+SELECT round(SUM(Total),2) AS total_sales_2009
+FROM invoices
+WHERE InvoiceDate LIKE "2009%";
+
+--12. What are the total sales for each year? Which year had the most sales?
+SELECT  
+    CASE
+        WHEN InvoiceDate LIKE "2009%" THEN "2009"
+        WHEN InvoiceDate LIKE "2010%" THEN "2010"
+        WHEN InvoiceDate LIKE "2011%" THEN "2011"
+        WHEN InvoiceDate LIKE "2012%" THEN "2012"
+        WHEN InvoiceDate LIKE "2013%" THEN "2013"
+    END AS year, round(SUM(Total),2) AS total_sales
+FROM invoices
+GROUP BY year
+ORDER BY total_sales DESC;
+
+--13. Write a query that includes the purchased track name and artist name with each invoice line ID.
+SELECT i.InvoiceLineId, t.Name, art.Name
+FROM tracks t
+JOIN invoice_items i
+ON t.TrackID = i.TrackId
+JOIN albums alb
+ON t.AlbumId = alb.AlbumId
+JOIN artists art
+ON art.ArtistId = alb.ArtistId
+ORDER BY i.InvoiceLineId;
+
+--14. Provide a query that shows all the tracks, and include the album name, media type, and genre.
+SELECT t.Name AS track_name, a.Title AS album_name, m.Name AS media_type, g.Name AS genre_type
+FROM tracks t
+JOIN albums a
+ON t.AlbumId = a.AlbumId
+JOIN media_types m
+ON t.MediaTypeID = m.MediaTypeId
+JOIN genres g
+ON t.GenreId = g.GenreId;
+
+--15. Which track is bought most often?
+SELECT COUNT(i.TrackId) AS number_sold, t.Name
+FROM invoice_items i
+JOIN tracks t
+ON t.TrackId = i.TrackId
+GROUP BY t.Name
+ORDER BY number_sold DESC
+LIMIT 50;
+
+--16. What's the longest song in their inventory? The shortest? The average song length?
+SELECT Name, round(Milliseconds/60000.0, 2) AS song_length_in_min
+FROM tracks
+WHERE Milliseconds = (SELECT max(Milliseconds) FROM tracks)
+    OR Milliseconds = (SELECT min(Milliseconds) FROM tracks)
+ORDER BY song_length_in_min DESC;
+
+SELECT round(AVG(Milliseconds)/60000.0, 2) AS avg_song_length_in_min
+FROM tracks;
+
+--17. What's the most common genre in their inventory?
+SELECT g.Name, COUNT(t.GenreId) AS num_of_tracks
+FROM tracks t
+JOIN genres g
+ON g.GenreId = t.GenreId
+GROUP BY g.Name
+ORDER BY num_of_tracks DESC;
+
+
+--18. What Jazz tracks do they have? What Pop tracks do they have?
+SELECT t.Name AS track_name, art.Name AS artist, g.Name AS genre
+FROM tracks t
+JOIN albums alb
+ON t.AlbumId = alb.AlbumId
+JOIN artists art
+ON art.ArtistId = alb.AlbumId
+JOIN genres g
+ON g.GenreId = t.GenreId
+WHERE g.Name = "Jazz";
+
+SELECT t.Name AS track_name, art.Name AS artist, g.Name AS genre
+FROM tracks t
+JOIN albums alb
+ON t.AlbumId = alb.AlbumId
+JOIN artists art
+ON art.ArtistId = alb.AlbumId
+JOIN genres g
+ON g.GenreId = t.GenreId
+WHERE g.Name = "Pop";
