@@ -1,6 +1,4 @@
---Analysis of Music Store database
-
-https://cdn.fs.teachablecdn.com/ADNupMnWyR7kCWRvm76Laz/https://www.filepicker.io/api/file/sF9aIU7TqOLNWWSSNrOp
+--Analysis of Music Store database: https://cdn.fs.teachablecdn.com/ADNupMnWyR7kCWRvm76Laz/https://www.filepicker.io/api/file/sF9aIU7TqOLNWWSSNrOp
 
 --1. Show customers (their full names, customer ID, and country) who are not in the US.
 SELECT CustomerId, FirstName, LastName, Country
